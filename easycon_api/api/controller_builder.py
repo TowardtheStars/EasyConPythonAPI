@@ -2,7 +2,7 @@
 
 
 from math import cos, sin, pi
-from data import Buttons, Controller, DPad
+from easycon_api.api.data import Buttons, Controller, DPad
 from functools import singledispatch
 
 class ControllerButtonBuilder:

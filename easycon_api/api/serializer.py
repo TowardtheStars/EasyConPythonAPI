@@ -1,5 +1,5 @@
 
-from data import Controller
+from easycon_api.api.data import Controller
 import struct
 
 PRO_CONTROLLER_REPORT_LENGTH = 7

@@ -5,9 +5,9 @@ import serial, asyncio, queue
 from typing import Callable, Type
 
 
-from data import Buttons, DPad
-from controller_builder import ControllerBuilder, ControllerStickBuilder, ControllerButtonBuilder
-from serializer import EasyConSerialBuilder, SerialCommandBuilder
+from easycon_api.api.data import Buttons, DPad
+from easycon_api.api.controller_builder import ControllerBuilder, ControllerStickBuilder, ControllerButtonBuilder
+from easycon_api.api.serializer import EasyConSerialBuilder, SerialCommandBuilder
 
 import logging
 
@@ -45,7 +45,7 @@ class RealTimeController:
             try:
                 if self._cmd_queue.qsize() > 0:
                     state:RealTimeCommand = self._cmd_queue.get_nowait()
-                    # print(state)
+                    print(state)
                     if state.cmd_type == CMDType.TIMED:
                         self._device.write(state.cmd)
                         await asyncio.sleep(state.data['time'] / 1000)
@@ -57,7 +57,7 @@ class RealTimeController:
                     self._device.flush()
                     self._cmd_queue.task_done()
                 elif self._console:
-                    print('no cmd', ned = '\r')
+                    print('no cmd', end = '\r')
                     await asyncio.sleep(0.05)
                 else:
                     self._running = False
@@ -106,10 +106,11 @@ class RealTimeCommandBuilder:
         self._default_rstick = ControllerStickBuilder()
     
         
-    async def send(self):
-        
-        while self._state.qsize() > 0:
-            await self._target._cmd_queue.put(self._state.get())
+    def send(self):
+        async def _():
+            while self._state.qsize() > 0:
+                await self._target._cmd_queue.put(self._state.get())
+        asyncio.run(_())
         
         
     def command(self, 
