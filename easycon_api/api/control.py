@@ -115,13 +115,16 @@ class RealTimeCommandBuilder:
         
     def command(self, 
                 command_builder:Callable[[ControllerBuilder], ControllerBuilder], 
-                time:int=-1
+                time:int=-1,
+                send:bool=True
                 ):
         cmd = self._seriaizer.build(command_builder(ControllerBuilder()).build())
         if time < 0:
             self._state.put(RealTimeCommand(CMDType.CONTINUOUS, cmd, {}))
         else:
             self._state.put(RealTimeCommand(CMDType.TIMED, cmd, {'time':time}))
+        if send:
+            self.send()
         return self
         
     def button(self, key, time:int=50):
